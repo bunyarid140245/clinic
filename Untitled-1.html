@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI เพื่อนใจ - กองพัฒนานักศึกษา RMUTT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap');
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            -webkit-tap-highlight-color: transparent; /* ลบแถบสีเวลาแตะบน iOS/Android */
+        }
+        .rmutt-blue { background-color: #1e3a8a; }
+        
+        /* ตกแต่งปุ่มให้กดง่ายบนมือถือ (Touch Target) */
+        .touch-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .touch-card:active {
+            transform: scale(0.96);
+            background-color: #f0f7ff;
+        }
+        
+        /* ซ่อน Scrollbar แต่ยังเลื่อนได้ */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+    <header class="rmutt-blue text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex items-center gap-3">
+            <i class="fas fa-university text-2xl"></i>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold leading-none">AI Podcast</h1>
+                <p class="text-[10px] md:text-xs text-blue-200 uppercase tracking-wider">กองพัฒนานักศึกษา มทร.ธัญบุรี</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-4 md:p-8">
+        
+        <div id="page-role" class="block space-y-6">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">ยินดีต้อนรับครับ</h2>
+                <p class="text-gray-500">วันนี้คุณสนใจรับฟังข้อมูลด้านไหนดีครับ?</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button onclick="showTopics('self')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 touch-card flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-heart-pulse text-3xl text-rose-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">ต้องการกำลังใจ</h3>
+                    <p class="text-sm text-gray-400 mt-1">ฮีลใจ, ระบายความรู้สึก</p>
+                </button>
+
+                <button onclick="showTopics('friend')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 touch-card flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-hand-holding-hand text-3xl text-teal-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">ความรู้ทางใจ</h3>
+                    <p class="text-sm text-gray-400 mt-1">วิธีรับมือ, สังเกตอาการ</p>
+                </button>
+
+                <button onclick="showTopics('talk')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 touch-card flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-comments text-3xl text-orange-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">ทักษะการพูด</h3>
+                    <p class="text-sm text-gray-400 mt-1">พูดยังไงให้น่าฟัง</p>
+                </button>
+
+                <button onclick="showTopics('info')" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 touch-card flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-circle-info text-3xl text-blue-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">งานบริการ</h3>
+                    <p class="text-sm text-gray-400 mt-1">ข้อมูลการติดต่อ</p>
+                </button>
+            </div>
+        </div>
+
+        <div id="page-topic" class="hidden">
+            <button onclick="goBack('page-role')" class="mb-6 flex items-center text-blue-700 font-bold">
+                <i class="fas fa-chevron-left mr-2"></i> กลับหน้าหลัก
+            </button>
+            <h2 id="topic-title" class="text-2xl font-bold text-gray-800 mb-6">เลือกหัวข้อ</h2>
+            <div id="topic-list" class="grid grid-cols-1 gap-3">
+                </div>
+        </div>
+
+        <div id="page-player" class="hidden">
+            <button onclick="stopAndBack()" class="mb-6 flex items-center text-blue-700 font-bold">
+                <i class="fas fa-chevron-left mr-2"></i> ย้อนกลับ
+            </button>
+            
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100 text-center max-w-md mx-auto">
+                <div class="relative w-40 h-40 mx-auto mb-8">
+                    <div id="visualizer" class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-20"></div>
+                    <div class="relative w-40 h-40 bg-white rounded-full shadow-inner flex items-center justify-center border-8 border-gray-50">
+                        <i id="player-icon" class="fas fa-headphones text-5xl text-blue-800"></i>
+                    </div>
+                </div>
+
+                <h2 id="player-title" class="text-2xl font-bold text-gray-800 mb-2 px-2 truncate">ชื่อบทความ...</h2>
+                <p id="player-status" class="text-blue-500 font-medium mb-8">แตะปุ่มเพื่อเริ่มฟัง</p>
+                
+                <audio id="audio-player" class="hidden" playsinline></audio>
+
+                <div class="flex items-center justify-center gap-6">
+                    <button id="play-btn" onclick="togglePlay()" class="w-24 h-24 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-blue-700 active:scale-90 transition-all">
+                        <i id="btn-icon" class="fas fa-play text-3xl ml-1"></i>
+                    </button>
+                </div>
+                
+                <div class="mt-10 px-4">
+                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-blue-600 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] font-bold text-gray-400 mt-3 tracking-tighter">
+                        <span id="current-time">0:00</span>
+                        <span id="duration">0:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const topics = {
+            'self': [
+                { title: 'ความรัก (เยียวยาการนอกใจ)', icon: 'fa-heart', color: 'text-red-500', file: 'love_healing.mp3' },
+                { title: 'เรื่องการเรียน', icon: 'fa-book-open', color: 'text-blue-500', file: 'study.mp3' },
+                { title: 'เมื่อรู้สึกดิ่ง', icon: 'fa-cloud-showers-heavy', color: 'text-indigo-400', file: 'blue.mp3' }
+            ],
+            'friend': [
+                { title: 'วิธีสังเกตเพื่อน', icon: 'fa-eye', color: 'text-teal-500', file: 'friend_watch.mp3' },
+                { title: 'คำพูดที่ควรหลีกเลี่ยง', icon: 'fa-comment-slash', color: 'text-orange-500', file: 'stop_talk.mp3' }
+            ],
+            'talk': [
+                { title: 'เทคนิคการเล่าเรื่อง', icon: 'fa-microphone', color: 'text-purple-500', file: 'talk_skill.mp3' }
+            ],
+            'info': [
+                { title: 'การนัดหมายปรึกษา', icon: 'fa-calendar-check', color: 'text-blue-600', file: 'appointment.mp3' }
+            ]
+        };
+
+        const audio = document.getElementById('audio-player');
+        const playBtn = document.getElementById('btn-icon');
+        const progressBar = document.getElementById('progress-bar');
+        const visualizer = document.getElementById('visualizer');
+
+        function showTopics(role) {
+            window.scrollTo(0, 0);
+            document.getElementById('page-role').classList.add('hidden');
+            document.getElementById('page-topic').classList.remove('hidden');
+            
+            const list = document.getElementById('topic-list');
+            list.innerHTML = ''; 
+
+            if(topics[role]) {
+                topics[role].forEach(item => {
+                    list.innerHTML += `
+                        <button onclick="showPlayer('${item.title}', '${item.file}')" class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-4 touch-card w-full text-left">
+                            <div class="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fas ${item.icon} text-xl ${item.color}"></i>
+                            </div>
+                            <span class="font-bold text-gray-700">${item.title}</span>
+                            <i class="fas fa-chevron-right ml-auto text-gray-300 text-xs"></i>
+                        </button>
+                    `;
+                });
+            }
+        }
+
+        function showPlayer(title, fileName) {
+            window.scrollTo(0, 0);
+            document.getElementById('page-topic').classList.add('hidden');
+            document.getElementById('page-player').classList.remove('hidden');
+            document.getElementById('player-title').innerText = title;
+            
+            audio.src = fileName;
+            audio.load();
+            
+            // รีเซ็ตหน้าตาปุ่ม
+            document.getElementById('player-status').innerText = "พร้อมเล่น";
+            playBtn.className = 'fas fa-play text-3xl ml-1';
+            visualizer.classList.add('hidden');
+        }
+
+        function togglePlay() {
+            if (audio.paused) {
+                // สำหรับมือถือ ต้องใช้ .play() ภายใน Event Handler ของปุ่มกดเท่านั้น
+                audio.play().then(() => {
+                    playBtn.className = 'fas fa-pause text-3xl';
+                    document.getElementById('player-status').innerText = "กำลังเล่น Podcast";
+                    visualizer.classList.remove('hidden');
+                }).catch(err => {
+                    alert("ไม่สามารถเล่นเสียงได้ โปรดลองอีกครั้ง");
+                });
+            } else {
+                audio.pause();
+                playBtn.className = 'fas fa-play text-3xl ml-1';
+                document.getElementById('player-status').innerText = "หยุดชั่วคราว";
+                visualizer.classList.add('hidden');
+            }
+        }
+
+        audio.ontimeupdate = function() {
+            if (audio.duration) {
+                const pos = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = pos + "%";
+                document.getElementById('current-time').innerText = formatTime(audio.currentTime);
+                document.getElementById('duration').innerText = formatTime(audio.duration);
+            }
+        };
+
+        function formatTime(secs) {
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return m + ":" + (s < 10 ? "0" + s : s);
+        }
+
+        function stopAndBack() {
+            audio.pause();
+            audio.currentTime = 0;
+            goBack('page-topic');
+        }
+
+        function goBack(id) {
+            document.getElementById('page-role').classList.add('hidden');
+            document.getElementById('page-topic').classList.add('hidden');
+            document.getElementById('page-player').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
